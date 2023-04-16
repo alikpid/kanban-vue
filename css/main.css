@@ -1,0 +1,154 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+body {
+    padding: 25px;
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+}
+h2, h3{
+    text-align: center;
+    padding: 10px;
+}
+ol li, ul > li {
+    margin-left: 17px;
+}
+.kanban-board{
+    margin-top: 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    height: 100%;
+}
+.to-do-col, .in-progress-col, .testing-col, .done-col{
+    border: 1px solid #d8d8d8;
+    width: 33%;
+    min-height: 70vh;
+    max-height: 100%;
+}
+/*.addNote{*/
+/*    width: 400px;*/
+/*    padding: 20px;*/
+/*    border: 1px solid #d8d8d8;*/
+/*}*/
+.add-card input{
+    width: 100%;
+    height: 30px;
+    font-size: 17px;
+    margin-bottom: 10px;
+}
+.add-card button{
+    margin-top: 5px;
+    border: none;
+    background-color: cornflowerblue;
+    color: white;
+    height: 40px;
+    width: 100px;
+    font-size: 14px;
+}
+.error{
+    padding: 10px 0 10px 25px;
+    margin: 5px 0 5px 0;
+    background-color: cornflowerblue;
+    color: white;
+}
+
+input[type="checkbox"]{
+    accent-color: cornflowerblue;
+    width: 15px;
+    height: 15px;
+    color: #d8d8d8;
+
+}
+.dateNote{
+    float: right;
+    margin-top: -20px;
+    font-style: italic;
+}
+.note{
+    margin: 0 5px 10px 5px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1050;
+    opacity: 0;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+}
+
+.modal:target {
+    opacity: 1;
+    pointer-events: auto;
+    overflow-y: auto;
+}
+
+.modal-dialog {
+    position: relative;
+    margin: 10px;
+}
+@media (min-width: 400px) {
+    .modal-dialog {
+        max-width: 440px;
+        margin: 80px auto;
+    }
+}
+
+.modal-content {
+    position: relative;
+    flex-direction: column;
+    background-color: #fff;
+    padding: 20px;
+    background-clip: padding-box;
+    border: 1px solid rgba(0,0,0,.2);
+    outline: 0;
+}
+@media (min-width: 768px) {
+    .modal-content {
+        box-shadow: 0 5px 15px rgba(0,0,0,.5);
+    }
+}
+
+.modal-header {
+    float: right;
+}
+.close {
+    font-family: sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+    color: #000;
+    text-shadow: 0 1px 0 #fff;
+    opacity: .5;
+    text-decoration: none;
+}
+
+.close:focus, .close:hover {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: .75;
+}
+
+.modal-body {
+    position: relative;
+    flex: 1 1 auto;
+    padding: 15px;
+    overflow: auto;
+}
+
+.btnModal {
+    text-align: center;
+    display: block;
+    padding: 10px 15px;
+    color: cornflowerblue;
+    font-size: 18px;
+}
