@@ -33,11 +33,14 @@ ol li, ul > li {
 /*    padding: 20px;*/
 /*    border: 1px solid #d8d8d8;*/
 /*}*/
-.add-card input{
+.add-card input, textarea{
     width: 100%;
     height: 30px;
     font-size: 17px;
     margin-bottom: 10px;
+}
+textarea{
+    resize: none;
 }
 .add-card button{
     margin-top: 5px;
