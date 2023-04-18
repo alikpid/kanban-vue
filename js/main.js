@@ -4,14 +4,17 @@ Vue.component('kanban-board', {
     template: `
     <div class="kanban-board">
         <col1 :column1="column1"></col1>
+        <col2 :column2="column2"></col2>
+        <col3 :column3="column3"></col3>
+        <col4 :column4="column4"></col4>
     </div>
 `,
     data() {
         return {
-            column1: {title: "To do", cards: []},
-            column2: [ { title: "In Progress", cards: [] } ],
-            column3: [ { title: "Testing", cards: [] } ],
-            column4: [ { title: "Done", cards: [] } ],
+            column1: { title: "To do", cards: [] },
+            column2: { title: "In progress", cards: [] },
+            column3: { title: "Testing", cards: [] },
+            column4: { title: "Done", cards: [] },
         }
     },
     mounted() {
@@ -23,15 +26,14 @@ Vue.component('kanban-board', {
     },
     methods: {
         saveColumn1() {
-            console.log(this.column1);
             localStorage.setItem('column1', JSON.stringify(this.column1));
         },
     },
-    computed: {
-        column2length() {
-            return this.column2.length;
-        }
-    }
+    // computed: {
+    //     column2length() {
+    //         return this.column2.length;
+    //     }
+    // }
 })
 
 Vue.component('new-card', {
@@ -50,15 +52,15 @@ Vue.component('new-card', {
             <h3>Add task</h3>
  
             <p>
-                <label for="title">Title</label>
+                <label for="title">Title:</label>
                 <input type="text" id="title" v-model="title">
             </p>
             <p>
-                <label for="description">Description</label>
+                <label for="description">Description:</label>
                 <textarea type="text" id="description" v-model="description"></textarea>
             </p>
             <p>
-                <label for="deadline">Deadline</label>
+                <label for="deadline">Deadline:</label>
                 <input type="date" id="deadline" v-model="deadline">
             </p>
 
@@ -72,9 +74,9 @@ Vue.component('new-card', {
 
     `,
     props: {
-      column1: {
-          type: Array
-      }
+      // column1: {
+      //     type: Array
+      // }
     },
     data() {
         return {
@@ -96,7 +98,6 @@ Vue.component('new-card', {
                     editable: false
                 }
                 eventBus.$emit('addNewCard', card);
-                eventBus.$emit('saveColumn1');
                 this.title = '';
                 this.description = '';
                 this.deadline = '';
@@ -117,18 +118,23 @@ Vue.component('col1', {
     computed: {
         cards() {
             return this.column1.cards;
-        }
+        },
     },
-
+    methods: {
+        getFormattedDate(date){
+            let myDate = new Date(date);
+            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        },
+    },
     template: `
    <div class="to-do-col">
-   <h3>To do</h3>
-        <div class="card" v-for="(card, index) in cards" :key="index">
-            <h3>{{card.title}}</h3>
-            <p class="card-desc">{{card.description}}</p>
-            <span class="card-deadline">{{card.deadline}}</span>
-        </div>
-   </div>
+    <h3>{{column1.title}}</h3>
+    <div class="card" v-for="(card, index) in cards" :key="index">
+        <h3>{{card.title}}</h3>
+        <p class="card-desc">{{card.description}}</p>
+        <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+    </div>
+    </div>
     `,
     // methods: {
     //     changeAchievement(note, item) {
@@ -149,7 +155,7 @@ Vue.component('col1', {
 Vue.component('col2', {
     props: {
         column2: {
-            type: Array,
+            type: Object,
         },
         // note: {
         //     type: Object
@@ -173,8 +179,8 @@ Vue.component('col2', {
 <!--            </ol>-->
 <!--            </li>-->
 <!--        </ul>-->
-        
-        
+
+
    </div>
     `,
     // methods: {
@@ -196,9 +202,10 @@ Vue.component('col2', {
 Vue.component('col3', {
     props: {
         column3: {
-            type: Array,
+            type: Object,
         },
     },
+
     template: `
    <div class="testing-col">
    <h3>Testing</h3>
@@ -213,7 +220,7 @@ Vue.component('col3', {
 <!--            </li>-->
 <!--        </ul>-->
 <!--        -->
-        
+
    </div>
     `,
 })
@@ -221,14 +228,14 @@ Vue.component('col3', {
 Vue.component('col4', {
     props: {
         column3: {
-            type: Array,
+            type: Object,
         },
-        note: {
-            type: Object
-        },
-        errors: {
-            type: Array
-        }
+        // note: {
+        //     type: Object
+        // },
+        // errors: {
+        //     type: Array
+        // }
     },
     template: `
    <div class="done-col">
@@ -243,8 +250,8 @@ Vue.component('col4', {
 <!--            </ol>-->
 <!--            </li>-->
 <!--        </ul>-->
-        
-        
+
+
    </div>
     `,
 })

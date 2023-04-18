@@ -8,9 +8,38 @@ body {
     font-family: Arial, sans-serif;
     background-color: #f2f2f2;
 }
-h2, h3{
+h3{
+    /*border-radius: 5px;*/
     text-align: center;
     padding: 10px;
+    font-weight: normal;
+}
+.to-do-col h3{
+    border-bottom-left-radius: 5px;
+    border-top-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.to-do-col > h3{
+    background-color: #afc9f6;
+}
+.in-progress-col h3,
+.testing-col h3{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.in-progress-col > h3{
+    background-color: #ffbc40;
+}
+.testing-col > h3{
+    background-color: #d4b0f4;
+}
+.done-col h3{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.done-col > h3{
+    background-color: lightgreen;
 }
 ol li, ul > li {
     margin-left: 17px;
@@ -23,7 +52,7 @@ ol li, ul > li {
     height: 100%;
 }
 .to-do-col, .in-progress-col, .testing-col, .done-col{
-    border: 1px solid #d8d8d8;
+    /*border: 1px solid #d8d8d8;*/
     width: 33%;
     min-height: 70vh;
     max-height: 100%;
@@ -35,16 +64,27 @@ ol li, ul > li {
 /*}*/
 .add-card input, textarea{
     width: 100%;
+    padding: 5px;
     height: 30px;
     font-size: 17px;
     margin-bottom: 10px;
 }
 textarea{
     resize: none;
+    height: 70px;
+    font-family: inherit;
+}
+.add-card label{
+    display: block;
+    margin-bottom: 5px;
+}
+.add-card p{
+    margin-bottom: 5px;
 }
 .add-card button{
-    margin-top: 5px;
+    margin-top: 10px;
     border: none;
+    border-radius: 2px;
     background-color: cornflowerblue;
     color: white;
     height: 40px;
@@ -57,23 +97,24 @@ textarea{
     background-color: cornflowerblue;
     color: white;
 }
-
-input[type="checkbox"]{
-    accent-color: cornflowerblue;
-    width: 15px;
-    height: 15px;
-    color: #d8d8d8;
-
-}
-.dateNote{
-    float: right;
-    margin-top: -20px;
+.deadline{
     font-style: italic;
 }
-.note{
-    margin: 0 5px 10px 5px;
+.card{
+    border: 1px solid rgba(0,0,0,.2);
+    border-radius: 5px;
+    padding: 15px;
+    /*margin: 0 5px 10px 5px;*/
 }
-
+.card h3{
+    padding: 0;
+    text-align: left;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+.card-desc{
+    margin-bottom: 15px;
+}
 .modal {
     position: fixed;
     top: 0;
@@ -117,6 +158,7 @@ input[type="checkbox"]{
 @media (min-width: 768px) {
     .modal-content {
         box-shadow: 0 5px 15px rgba(0,0,0,.5);
+        border-radius: 5px;
     }
 }
 
