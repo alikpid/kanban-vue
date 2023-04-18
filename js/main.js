@@ -4,14 +4,11 @@ Vue.component('kanban-board', {
     template: `
     <div class="kanban-board">
         <col1 :column1="column1"></col1>
-        <col2 :column2="column2"></col2>
-        <col3 :column3="column3"></col3> 
-        <col4 :column4="column4"></col4>  
     </div>
 `,
     data() {
         return {
-            column1: [],
+            column1: {title: "To do", cards: []},
             column2: [ { title: "In Progress", cards: [] } ],
             column3: [ { title: "Testing", cards: [] } ],
             column4: [ { title: "Done", cards: [] } ],
@@ -20,15 +17,13 @@ Vue.component('kanban-board', {
     mounted() {
         this.column1 = JSON.parse(localStorage.getItem('column1')) || [];
         eventBus.$on('addNewCard', card => {
-            this.column1.push(card);
-            this.saveColumn1();
-        });
-        eventBus.$on('saveColumn1', () => {
+            this.column1.cards.push(card);
             this.saveColumn1();
         });
     },
     methods: {
         saveColumn1() {
+            console.log(this.column1);
             localStorage.setItem('column1', JSON.stringify(this.column1));
         },
     },
@@ -115,16 +110,20 @@ Vue.component('new-card', {
 Vue.component('col1', {
     props: {
         column1: {
-            type: Array,
-        },
-        card: {
-            type: Object
+            type: Object,
         },
     },
+
+    computed: {
+        cards() {
+            return this.column1.cards;
+        }
+    },
+
     template: `
    <div class="to-do-col">
    <h3>To do</h3>
-        <div class="card" v-for="(card, index) in column1" :key="index">
+        <div class="card" v-for="(card, index) in cards" :key="index">
             <h3>{{card.title}}</h3>
             <p class="card-desc">{{card.description}}</p>
             <span class="card-deadline">{{card.deadline}}</span>
