@@ -19,14 +19,24 @@ Vue.component('kanban-board', {
     },
     mounted() {
         this.column1 = JSON.parse(localStorage.getItem('column1')) || [];
+        this.column2 = JSON.parse(localStorage.getItem('column2')) || [];
         eventBus.$on('addNewCard', card => {
             this.column1.cards.push(card);
             this.saveColumn1();
+        });
+        eventBus.$on('addToCol2', card => {
+            this.column2.cards.push(card);
+            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
+            this.saveColumn1();
+            this.saveColumn2()
         });
     },
     methods: {
         saveColumn1() {
             localStorage.setItem('column1', JSON.stringify(this.column1));
+        },
+        saveColumn2() {
+            localStorage.setItem('column2', JSON.stringify(this.column2));
         },
     },
     // computed: {
@@ -94,14 +104,14 @@ Vue.component('new-card', {
                     description: this.description.trim(),
                     deadline: this.deadline.trim(),
                     createdDate: new Date(),
-                    status: 'todo',
+                    editingDate: new Date(),
                     editable: false
                 }
                 eventBus.$emit('addNewCard', card);
                 this.title = '';
                 this.description = '';
                 this.deadline = '';
-                this.createdDate = '';
+                // this.createdDate = '';
 
             }
         }
@@ -129,6 +139,12 @@ Vue.component('col1', {
             console.log(myDate);
             return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
         },
+        changeStatus(card) {
+            card.editable = true
+            card.editingDate = new Date();
+            console.log(card.createdDate);
+            eventBus.$emit('addToCol2', card);
+            }
     },
     template: `
    <div class="to-do-col">
@@ -137,24 +153,11 @@ Vue.component('col1', {
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
       <span class="card-deadline">deadline: {{ getFormattedDeadlineDate(card.deadline) }}</span>
-      <p class="card-created-date">created: {{ getFormattedCreatedDate(card.createdDate) }}</p>
+      <p class="card-created-date">creating: {{ getFormattedCreatedDate(card.createdDate) }}</p>
+      <button type="button" @click="changeStatus(card)">AA</button>
     </div>
   </div>
-    `,
-    // methods: {
-    //     changeAchievement(note, item) {
-    //         item.completed = !item.completed
-    //         note.progress = 0
-    //
-    //         for (let i = 0; i < note.noteItems.length; ++i)
-    //             if (note.noteItems[i].completed === true)
-    //                 note.progress++;
-    //         if ((note.progress / note.noteItems.length) * 100 >= 50) {
-    //             eventBus.$emit('addToCol2', note);
-    //         }
-    //     },
-    //
-    // },
+    `
 })
 
 Vue.component('col2', {
@@ -162,46 +165,43 @@ Vue.component('col2', {
         column2: {
             type: Object,
         },
-        // note: {
-        //     type: Object
-        // },
-        // errors2: {
-        //     type: Array
+    },
+    computed: {
+        cards() {
+            return this.column2.cards;
+        },
+    },
+    methods: {
+        getFormattedDeadlineDate(date){
+            let myDate = new Date(date);
+            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        },
+        getFormattedCreatedDate(date){
+            let myDate = new Date(date);
+            console.log(myDate);
+            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        },
+        // changeStatus(card) {
+        //     card.editable = true
+        //     eventBus.$emit('addToCol2', card);
         // }
     },
-
     template: `
    <div class="in-progress-col">
    <h3>{{ column2.title }}</h3>
-<!--        <div class="error" v-for="error in errors2" :key="error.name">{{error}}</div>-->
-<!--       <ul class="note" v-for="note in column2" :key="note.date">-->
-<!--            <li>{{note.title}}  -->
-<!--            <ol>-->
-<!--                <li class="items" v-for="item in note.noteItems" :key="item.title">-->
-<!--                    <input type="checkbox" :checked="item.completed" @click="changeAchievement(note, item)" id="item">-->
-<!--                    <label for="item">{{item.title}}</label>-->
-<!--                </li>-->
-<!--            </ol>-->
-<!--            </li>-->
-<!--        </ul>-->
+   <div class="card" v-for="(card, index) in cards" :key="index">
+      <h3>{{card.title}}</h3>
+      <p class="card-desc">{{card.description}}</p>
+      <span class="card-deadline">deadline: {{ getFormattedDeadlineDate(card.deadline) }}</span>
+      <p class="card-created-date">created: {{ getFormattedCreatedDate(card.createdDate) }}</p>
+      <p class="card-created-date">editing: {{ getFormattedCreatedDate(card.createdDate) }}</p> <!-- поменяй когда сделаешь редактирование карточки -->
+<!--      <button type="button" @click="changeStatus(card)">AA</button>-->
+    </div>
+  </div>
 
 
    </div>
     `,
-    // methods: {
-    //     changeAchievement(note, item) {
-    //         item.completed = !item.completed;
-    //         note.progress = 0;
-    //         for (let i = 0; i < note.noteItems.length; ++i)
-    //             if (note.noteItems[i]?.completed === true)
-    //                 note.progress++;
-    //         if ((note.progress / note.noteItems.length) * 100 === 100) {
-    //             eventBus.$emit('addToCol3', note);
-    //             note.date = new Date().toLocaleString();
-    //         }
-    //
-    //     },
-    // },
 })
 
 Vue.component('col3', {
