@@ -93,7 +93,7 @@ Vue.component('new-card', {
                     title: this.title.trim(),
                     description: this.description.trim(),
                     deadline: this.deadline.trim(),
-                    createdDate: new Date().toLocaleString(),
+                    createdDate: new Date(),
                     status: 'todo',
                     editable: false
                 }
@@ -114,15 +114,19 @@ Vue.component('col1', {
             type: Object,
         },
     },
-
     computed: {
         cards() {
             return this.column1.cards;
         },
     },
     methods: {
-        getFormattedDate(date){
+        getFormattedDeadlineDate(date){
             let myDate = new Date(date);
+            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        },
+        getFormattedCreatedDate(date){
+            let myDate = new Date(date);
+            console.log(myDate);
             return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
         },
     },
@@ -130,11 +134,12 @@ Vue.component('col1', {
    <div class="to-do-col">
     <h3>{{column1.title}}</h3>
     <div class="card" v-for="(card, index) in cards" :key="index">
-        <h3>{{card.title}}</h3>
-        <p class="card-desc">{{card.description}}</p>
-        <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <h3>{{card.title}}</h3>
+      <p class="card-desc">{{card.description}}</p>
+      <span class="card-deadline">deadline: {{ getFormattedDeadlineDate(card.deadline) }}</span>
+      <p class="card-created-date">created: {{ getFormattedCreatedDate(card.createdDate) }}</p>
     </div>
-    </div>
+  </div>
     `,
     // methods: {
     //     changeAchievement(note, item) {
@@ -167,7 +172,7 @@ Vue.component('col2', {
 
     template: `
    <div class="in-progress-col">
-   <h3>In progress</h3>
+   <h3>{{ column2.title }}</h3>
 <!--        <div class="error" v-for="error in errors2" :key="error.name">{{error}}</div>-->
 <!--       <ul class="note" v-for="note in column2" :key="note.date">-->
 <!--            <li>{{note.title}}  -->
@@ -208,7 +213,7 @@ Vue.component('col3', {
 
     template: `
    <div class="testing-col">
-   <h3>Testing</h3>
+   <h3>{{ column3.title }}</h3>
 <!--        <ul class="note" v-for="note in column3" :key="note.date">-->
 <!--            <li>{{note.title}}  -->
 <!--            <ol>-->
@@ -227,7 +232,7 @@ Vue.component('col3', {
 
 Vue.component('col4', {
     props: {
-        column3: {
+        column4: {
             type: Object,
         },
         // note: {
@@ -239,7 +244,7 @@ Vue.component('col4', {
     },
     template: `
    <div class="done-col">
-   <h3>Done</h3>
+   <h3>{{ column4.title }}</h3>
 <!--        <ul class="note" v-for="note in column3" :key="note.date">-->
 <!--            <li>{{note.title}}  -->
 <!--            <ol>-->
