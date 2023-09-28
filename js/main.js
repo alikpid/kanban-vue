@@ -32,8 +32,6 @@ Vue.component('kanban-board', {
             this.column4.cards.push(card)
             this.column3.cards.splice(this.column3.cards.indexOf(card), 1);
             card.completedDate = new Date().toLocaleDateString()
-            console.log(card.completedDate)
-            console.log(card.deadline)
         })
     },
     methods: {},
@@ -102,7 +100,7 @@ Vue.component('new-card', {
                     marker: false,
                     completedDate: null,
                     transfer: false,
-                    reason: "",
+                    reasons: [],
                 }
                 eventBus.$emit('addNewCard', card);
                 this.title = '';
@@ -141,8 +139,8 @@ Vue.component('col1', {
         updateCard(card) {
             card.editable = false
             card.marker = true
-            this.column1.push(card)
-            this.column1.splice(this.column1.indexOf(card), 1)
+            this.column1.cards.push(card)
+            this.column1.cards.splice(this.column1.cards.indexOf(card), 1)
             card.editingDate = new Date();
         }
 
@@ -205,8 +203,8 @@ Vue.component('col2', {
         updateCard(card) {
             card.editable = false
             card.marker = true
-            this.column2.push(card)
-            this.column2.splice(this.column2.indexOf(card), 1)
+            this.column2.cards.push(card)
+            this.column2.cards.splice(this.column2.cards.indexOf(card), 1)
             card.editingDate = new Date();
         }
     },
@@ -223,7 +221,11 @@ Vue.component('col2', {
       <span class="card-deadline">deadline: {{ card.deadline }}</span>
       <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
-      <p v-if="card.reason.length" class="card-created-date">reason: {{ card.reason }}</p>
+      <p v-if="card.reasons.length">Reason for return:
+          <ul class="card-created-date" v-for="(reason, index) in card.reasons">
+            <li>{{ reason }}</li>
+          </ul>
+      </p>
       <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
       <div class="editForm" v-if="card.editable">
          <form class="editForm" @submit.prevent="updateCard(card)">
@@ -269,7 +271,8 @@ Vue.component('col3', {
             eventBus.$emit('addToCol4', card);
         },
         lastcol(card) {
-            card.reason = document.getElementById('reason_inp').value;
+            let reason_val = document.getElementById('reason_inp').value;
+            card.reasons.push(reason_val)
             card.transfer = false
             this.column3.cards.splice(this.column3.cards.indexOf(card), 1)
             eventBus.$emit('addToCol2', card)
@@ -277,8 +280,8 @@ Vue.component('col3', {
         updateCard(card) {
             card.editable = false
             card.marker = true
-            this.column3.push(card)
-            this.column3.splice(this.column3.indexOf(card), 1)
+            this.column3.cards.push(card)
+            this.column3.cards.splice(this.column3.cards.indexOf(card), 1)
             card.editingDate = new Date();
         }
     },
@@ -296,6 +299,11 @@ Vue.component('col3', {
       <span class="card-deadline">deadline: {{ card.deadline }}</span>
       <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <p v-if="card.reasons.length">Reason for return:
+          <ul class="card-created-date" v-for="(reason, index) in card.reasons">
+            <li>{{ reason }}</li>
+          </ul>
+      </p>
       <div class="topBtn">
           <button class="btnMoveRight" type="button" @click="card.transfer = true">←</button>
           <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
