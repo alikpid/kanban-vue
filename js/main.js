@@ -315,13 +315,10 @@ Vue.component('col3', {
          </form>
       </div>
       <div v-if="card.transfer">
-          <form @submit.prevent="lastcol(card)">
-               <p>The reason of transfer:
-                   <input type="text" id="reason_inp">
-               </p>
-               <p>
-                   <button type="submit">OK</button>
-               </p>
+          <form class="editForm" @submit.prevent="lastcol(card)">
+               <label for="reason_inp">The reason of transfer</label>
+                   <input type="text" id="reason_inp"> <br>
+               <button style="margin-top: 10px" class="btnEdit" type="submit">OK</button>
           </form>
       </div>
    </div>
