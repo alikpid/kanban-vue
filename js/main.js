@@ -11,39 +11,22 @@ Vue.component('kanban-board', {
 `,
     data() {
         return {
-            column1: { title: "To do", cards: [] },
-            column2: { title: "In progress", cards: [] },
-            column3: { title: "Testing", cards: [] },
-            column4: { title: "Done", cards: [] },
+            column1: {title: "To do", cards: []},
+            column2: {title: "In progress", cards: []},
+            column3: {title: "Testing", cards: []},
+            column4: {title: "Done", cards: []},
         }
     },
     mounted() {
-        this.column1 = JSON.parse(localStorage.getItem('column1')) || [];
-        this.column2 = JSON.parse(localStorage.getItem('column2')) || [];
         eventBus.$on('addNewCard', card => {
             this.column1.cards.push(card);
-            this.saveColumn1();
         });
         eventBus.$on('addToCol2', card => {
             this.column2.cards.push(card);
             this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
-            this.saveColumn1();
-            this.saveColumn2()
         });
     },
-    methods: {
-        saveColumn1() {
-            localStorage.setItem('column1', JSON.stringify(this.column1));
-        },
-        saveColumn2() {
-            localStorage.setItem('column2', JSON.stringify(this.column2));
-        },
-    },
-    // computed: {
-    //     column2length() {
-    //         return this.column2.length;
-    //     }
-    // }
+    methods: {},
 })
 
 Vue.component('new-card', {
@@ -84,9 +67,9 @@ Vue.component('new-card', {
 
     `,
     props: {
-      // column1: {
-      //     type: Array
-      // }
+        // column1: {
+        //     type: Array
+        // }
     },
     data() {
         return {
@@ -105,7 +88,8 @@ Vue.component('new-card', {
                     deadline: this.deadline.trim(),
                     createdDate: new Date(),
                     editingDate: new Date(),
-                    editable: false
+                    editable: false,
+                    marker: false,
                 }
                 eventBus.$emit('addNewCard', card);
                 this.title = '';
@@ -130,31 +114,53 @@ Vue.component('col1', {
         },
     },
     methods: {
-        getFormattedDeadlineDate(date){
+        getFormattedDate(date) {
             let myDate = new Date(date);
             return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
         },
-        getFormattedCreatedDate(date){
-            let myDate = new Date(date);
-            console.log(myDate);
-            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        deleteCard(card) {
+            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
         },
         changeStatus(card) {
-            card.editable = true
-            card.editingDate = new Date();
-            console.log(card.createdDate);
             eventBus.$emit('addToCol2', card);
-            }
+        },
+        updateCard(card) {
+            card.editable = false
+            card.marker = true
+            this.column1.push(card)
+            this.column1.splice(this.column1.indexOf(card), 1)
+            card.editingDate = new Date();
+        }
+
     },
     template: `
    <div class="to-do-col">
     <h3>{{column1.title}}</h3>
     <div class="card" v-for="(card, index) in cards" :key="index">
+    <div class="topBtn">
+        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnDel" @click="deleteCard(card)">X</button>
+    </div>
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
-      <span class="card-deadline">deadline: {{ getFormattedDeadlineDate(card.deadline) }}</span>
-      <p class="card-created-date">creating: {{ getFormattedCreatedDate(card.createdDate) }}</p>
-      <button type="button" @click="changeStatus(card)">AA</button>
+      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <p class="card-created-date">creating: {{ getFormattedDate(card.createdDate) }}</p>
+      <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
+      <div class="editForm" v-if="card.editable">
+         <form class="editForm" @submit.prevent="updateCard(card)">
+         <p>
+              <label for="newTitle">New title</label>
+              <input id="newTitle" type="text" v-model="card.title" maxlength="30" placeholder="Заголовок">
+         </p>
+              <p>New description: 
+                   <textarea v-model="card.description" cols="20" rows="5"></textarea>
+              </p>
+              <p>
+                 <button class="btnEdit" type="submit">Edit</button>
+              </p>
+         </form>
+      </div>
     </div>
   </div>
     `
@@ -172,15 +178,13 @@ Vue.component('col2', {
         },
     },
     methods: {
-        getFormattedDeadlineDate(date){
+        getFormattedDate(date) {
             let myDate = new Date(date);
             return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
         },
-        getFormattedCreatedDate(date){
-            let myDate = new Date(date);
-            console.log(myDate);
-            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
-        },
+        deleteCard(card) {
+            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
+        }
         // changeStatus(card) {
         //     card.editable = true
         //     eventBus.$emit('addToCol2', card);
@@ -192,10 +196,10 @@ Vue.component('col2', {
    <div class="card" v-for="(card, index) in cards" :key="index">
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
-      <span class="card-deadline">deadline: {{ getFormattedDeadlineDate(card.deadline) }}</span>
-      <p class="card-created-date">created: {{ getFormattedCreatedDate(card.createdDate) }}</p>
-      <p class="card-created-date">editing: {{ getFormattedCreatedDate(card.createdDate) }}</p> <!-- поменяй когда сделаешь редактирование карточки -->
-<!--      <button type="button" @click="changeStatus(card)">AA</button>-->
+      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
+      <p class="card-created-date">editing: {{ getFormattedDate(card.createdDate) }}</p> <!-- поменяй когда сделаешь редактирование карточки -->
+      <button type="button" @click="changeStatus(card)">AA</button>
     </div>
   </div>
 
@@ -263,10 +267,6 @@ Vue.component('col4', {
 
 let app = new Vue({
     el: '#app',
-    data: {
-
-    },
-    methods: {
-
-    }
+    data: {},
+    methods: {}
 })

@@ -197,3 +197,30 @@ textarea{
     color: cornflowerblue;
     font-size: 18px;
 }
+.topBtn {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+.btnEdit{
+    padding: 10px;
+    background-color: #afc9f6;
+    font-size: 16px;
+    border: none;
+}
+.btnDel {
+    padding: 10px;
+    background-color: red;
+    color: white;
+    border: none;
+}
+.editForm {
+    padding: 10px 0;
+}
+.btnMoveRight {
+    padding: 8px;
+    background-color: cornflowerblue;
+    color: white;
+    border: none;
+
+}
