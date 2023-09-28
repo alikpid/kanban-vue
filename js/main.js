@@ -25,6 +25,16 @@ Vue.component('kanban-board', {
             this.column2.cards.push(card);
             this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
         });
+        eventBus.$on('addToCol3', card => {
+            this.column3.cards.push(card)
+            this.column2.cards.splice(this.column2.cards.indexOf(card), 1);
+        });
+        eventBus.$on('addToCol3', card => {
+            this.column4.cards.push(card)
+            card.completedDate = new Date().toLocaleDateString()
+            // console.log(card.completedDate)
+            // console.log(card.deadline)
+        })
     },
     methods: {},
 })
@@ -90,6 +100,9 @@ Vue.component('new-card', {
                     editingDate: new Date(),
                     editable: false,
                     marker: false,
+                    completedDate: null,
+                    transfer: false,
+                    reason: "",
                 }
                 eventBus.$emit('addNewCard', card);
                 this.title = '';
@@ -183,23 +196,47 @@ Vue.component('col2', {
             return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
         },
         deleteCard(card) {
-            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
+            this.column2.cards.splice(this.column2.cards.indexOf(card), 1);
+        },
+        changeStatus(card) {
+            eventBus.$emit('addToCol3', card);
+        },
+        updateCard(card) {
+            card.editable = false
+            card.marker = true
+            this.column2.push(card)
+            this.column2.splice(this.column2.indexOf(card), 1)
+            card.editingDate = new Date();
         }
-        // changeStatus(card) {
-        //     card.editable = true
-        //     eventBus.$emit('addToCol2', card);
-        // }
     },
     template: `
    <div class="in-progress-col">
    <h3>{{ column2.title }}</h3>
    <div class="card" v-for="(card, index) in cards" :key="index">
+   <div class="topBtn">
+        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnDel" @click="deleteCard(card)">X</button>
+    </div>
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
       <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
       <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
-      <p class="card-created-date">editing: {{ getFormattedDate(card.createdDate) }}</p> <!-- поменяй когда сделаешь редактирование карточки -->
-      <button type="button" @click="changeStatus(card)">AA</button>
+      <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <p v-if="card.reason.length" class="card-created-date">reason: {{ card.reason }}</p>
+      <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
+      <div class="editForm" v-if="card.editable">
+         <form class="editForm" @submit.prevent="updateCard(card)">
+         <p>
+              <label for="newTitle">New title</label>
+              <input id="newTitle" type="text" v-model="card.title" maxlength="30" placeholder="Заголовок">
+         </p>
+              <p>New description: 
+                   <textarea v-model="card.description" cols="20" rows="5"></textarea>
+              </p>
+              <p>
+                 <button class="btnEdit" type="submit">Edit</button>
+              </p>
+         </form>
     </div>
   </div>
 
@@ -214,21 +251,79 @@ Vue.component('col3', {
             type: Object,
         },
     },
+    computed: {
+        cards() {
+            return this.column3.cards;
+        },
+    },
+    methods: {
+        getFormattedDate(date) {
+            let myDate = new Date(date);
+            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+        },
+        deleteCard(card) {
+            this.column3.cards.splice(this.column3.cards.indexOf(card), 1);
+        },
+        changeStatus(card) {
+            eventBus.$emit('addToCol4', card);
+        },
+        lastcol(card) {
+            card.reason = document.getElementById('reason_inp').value;
+            card.transfer = false
+            this.column3.cards.splice(this.column3.cards.indexOf(card), 1)
+            eventBus.$emit('addToCol2', card)
+        },
+        updateCard(card) {
+            card.editable = false
+            card.marker = true
+            this.column3.push(card)
+            this.column3.splice(this.column3.indexOf(card), 1)
+            card.editingDate = new Date();
+        }
+    },
 
     template: `
    <div class="testing-col">
    <h3>{{ column3.title }}</h3>
-<!--        <ul class="note" v-for="note in column3" :key="note.date">-->
-<!--            <li>{{note.title}}  -->
-<!--            <ol>-->
-<!--                <li class="items" v-for="item in note.noteItems" :key="item.title">-->
-<!--                    {{item.title}}-->
-<!--                </li>-->
-<!--                    <span class="dateNote">{{note.date}}</span>-->
-<!--            </ol>-->
-<!--            </li>-->
-<!--        </ul>-->
-<!--        -->
+   <div class="card" v-for="(card, index) in cards" :key="index">
+   <div class="topBtn">
+        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnDel" @click="deleteCard(card)">X</button>
+   </div>
+      <h3>{{card.title}}</h3>
+      <p class="card-desc">{{card.description}}</p>
+      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
+      <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <div class="topBtn">
+          <button class="btnMoveRight" type="button" @click="card.transfer = true">←</button>
+          <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
+      </div>
+      <div class="editForm" v-if="card.editable">
+         <form class="editForm" @submit.prevent="updateCard(card)">
+         <p>
+              <label for="newTitle">New title</label>
+              <input id="newTitle" type="text" v-model="card.title" maxlength="30" placeholder="Заголовок">
+         </p>
+              <p>New description: 
+                   <textarea v-model="card.description" cols="20" rows="5"></textarea>
+              </p>
+              <p>
+                 <button class="btnEdit" type="submit">Edit</button>
+              </p>
+         </form>
+      </div>
+      <div v-if="card.transfer">
+          <form @submit.prevent="lastcol(card)">
+               <p>The reason of transfer:
+                   <input type="text" id="reason_inp">
+               </p>
+               <p>
+                   <button type="submit">OK</button>
+               </p>
+          </form>
+      </div>
+   </div>
 
    </div>
     `,
