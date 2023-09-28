@@ -203,16 +203,18 @@ textarea{
     margin-bottom: 10px;
 }
 .btnEdit{
-    padding: 10px;
+    padding: 8px;
     background-color: #afc9f6;
-    font-size: 16px;
-    border: none;
+    border: 1px solid #afc9f6;
+    border-radius: 5px;
+    font-size: 18px;
 }
 .btnDel {
     padding: 10px;
     background-color: red;
     color: white;
-    border: none;
+    border: 1px solid red;
+    border-radius: 5px;
 }
 .editForm {
     padding: 10px 0;
@@ -221,6 +223,21 @@ textarea{
     padding: 8px;
     background-color: cornflowerblue;
     color: white;
-    border: none;
+    border: 1px solid cornflowerblue;
+    border-radius: 5px;
     margin-top: 10px;
+}
+.editForm input {
+    height: 30px;
+    width: 100%;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.editForm label{
+    display: block;
+    margin-bottom: 5px;
+}
+.notInTime {
+    background-color: #900020;
+    color: white;
 }

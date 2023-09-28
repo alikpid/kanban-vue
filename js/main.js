@@ -29,9 +29,9 @@ Vue.component('kanban-board', {
             this.column2.cards.splice(this.column2.cards.indexOf(card), 1);
         });
         eventBus.$on('addToCol4', card => {
-            this.column4.cards.push(card)
+            this.column4.cards.push(card);
             this.column3.cards.splice(this.column3.cards.indexOf(card), 1);
-            card.completedDate = new Date().toLocaleDateString()
+            card.completedDate = new Date().toLocaleDateString();
         })
     },
     methods: {},
@@ -74,11 +74,6 @@ Vue.component('new-card', {
 </section>
 
     `,
-    props: {
-        // column1: {
-        //     type: Array
-        // }
-    },
     data() {
         return {
             title: '',
@@ -106,8 +101,6 @@ Vue.component('new-card', {
                 this.title = '';
                 this.description = '';
                 this.deadline = '';
-                // this.createdDate = '';
-
             }
         }
     },
@@ -150,7 +143,7 @@ Vue.component('col1', {
     <h3>{{column1.title}}</h3>
     <div class="card" v-for="(card, index) in cards" :key="index">
     <div class="topBtn">
-        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnEdit" @click="card.editable = true">✎</button>
         <button class="btnDel" @click="deleteCard(card)">X</button>
     </div>
       <h3>{{card.title}}</h3>
@@ -161,16 +154,11 @@ Vue.component('col1', {
       <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
       <div class="editForm" v-if="card.editable">
          <form class="editForm" @submit.prevent="updateCard(card)">
-         <p>
-              <label for="newTitle">New title</label>
-              <input id="newTitle" type="text" v-model="card.title" maxlength="30" placeholder="Заголовок">
-         </p>
-              <p>New description: 
-                   <textarea v-model="card.description" cols="20" rows="5"></textarea>
-              </p>
-              <p>
-                 <button class="btnEdit" type="submit">Edit</button>
-              </p>
+            <label for="newTitle">New title:</label>
+                <input id="newTitle" type="text" v-model="card.title" maxlength="30">
+            <label for="newDesc">New description:</label>
+                <textarea id="newDesc" v-model="card.description"></textarea>
+            <button class="btnEdit" type="submit">Edit</button>
          </form>
       </div>
     </div>
@@ -213,7 +201,7 @@ Vue.component('col2', {
    <h3>{{ column2.title }}</h3>
    <div class="card" v-for="(card, index) in cards" :key="index">
    <div class="topBtn">
-        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnEdit" @click="card.editable = true">✎</button>
         <button class="btnDel" @click="deleteCard(card)">X</button>
     </div>
       <h3>{{card.title}}</h3>
@@ -291,7 +279,7 @@ Vue.component('col3', {
    <h3>{{ column3.title }}</h3>
    <div class="card" v-for="(card, index) in cards" :key="index">
    <div class="topBtn">
-        <button class="btnEdit" @click="card.editable = true">Edit</button>
+        <button class="btnEdit" @click="card.editable = true">✎</button>
         <button class="btnDel" @click="deleteCard(card)">X</button>
    </div>
       <h3>{{card.title}}</h3>
@@ -336,6 +324,11 @@ Vue.component('col3', {
 })
 
 Vue.component('col4', {
+    data() {
+        return {
+            isXui: false,
+        }
+    },
     props: {
         column4: {
             type: Object,
@@ -355,12 +348,18 @@ Vue.component('col4', {
     template: `
    <div class="done-col">
    <h3>{{ column4.title }}</h3>
-   <div class="card" v-for="(card, index) in cards" :key="index">
+   <div class="card" :class="{ notInTime: card.deadline<card.completedDate}" v-for="(card, index) in cards" :key="index">
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
       <span class="card-deadline">deadline: {{ card.deadline }}</span>
-      <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
+      <p class="card-created-date">done: {{ card.completedDate }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <p v-if="card.reasons.length">Reason for return:
+          <ul class="card-created-date" v-for="(reason, index) in card.reasons">
+            <li>{{ reason }}</li>
+          </ul>
+          <br>
+      </p>
       <p v-if="card.deadline >= card.completedDate">Сompleted in time</p>
       <p v-else>Not completed in time</p>
       </div>
