@@ -23,17 +23,17 @@ Vue.component('kanban-board', {
         });
         eventBus.$on('addToCol2', card => {
             this.column2.cards.push(card);
-            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
         });
         eventBus.$on('addToCol3', card => {
             this.column3.cards.push(card)
             this.column2.cards.splice(this.column2.cards.indexOf(card), 1);
         });
-        eventBus.$on('addToCol3', card => {
+        eventBus.$on('addToCol4', card => {
             this.column4.cards.push(card)
+            this.column3.cards.splice(this.column3.cards.indexOf(card), 1);
             card.completedDate = new Date().toLocaleDateString()
-            // console.log(card.completedDate)
-            // console.log(card.deadline)
+            console.log(card.completedDate)
+            console.log(card.deadline)
         })
     },
     methods: {},
@@ -95,7 +95,7 @@ Vue.component('new-card', {
                 let card = {
                     title: this.title.trim(),
                     description: this.description.trim(),
-                    deadline: this.deadline.trim(),
+                    deadline: this.deadline.split('-').reverse().join('.'),
                     createdDate: new Date(),
                     editingDate: new Date(),
                     editable: false,
@@ -129,12 +129,13 @@ Vue.component('col1', {
     methods: {
         getFormattedDate(date) {
             let myDate = new Date(date);
-            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+            return myDate.getDate() + "." + (myDate.getMonth() + 1) + "." + myDate.getFullYear();
         },
         deleteCard(card) {
             this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
         },
         changeStatus(card) {
+            this.column1.cards.splice(this.column1.cards.indexOf(card), 1);
             eventBus.$emit('addToCol2', card);
         },
         updateCard(card) {
@@ -156,7 +157,7 @@ Vue.component('col1', {
     </div>
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
-      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <span class="card-deadline">deadline: {{ card.deadline }}</span>
       <p class="card-created-date">creating: {{ getFormattedDate(card.createdDate) }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
       <button class="btnMoveRight" type="button" @click="changeStatus(card)">→</button>
@@ -193,7 +194,7 @@ Vue.component('col2', {
     methods: {
         getFormattedDate(date) {
             let myDate = new Date(date);
-            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+            return myDate.getDate() + "." + (myDate.getMonth() + 1) + "." + myDate.getFullYear();
         },
         deleteCard(card) {
             this.column2.cards.splice(this.column2.cards.indexOf(card), 1);
@@ -219,7 +220,7 @@ Vue.component('col2', {
     </div>
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
-      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <span class="card-deadline">deadline: {{ card.deadline }}</span>
       <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
       <p v-if="card.reason.length" class="card-created-date">reason: {{ card.reason }}</p>
@@ -259,7 +260,7 @@ Vue.component('col3', {
     methods: {
         getFormattedDate(date) {
             let myDate = new Date(date);
-            return myDate.getDate() + "/" + (myDate.getMonth() + 1) + "/" + myDate.getFullYear();
+            return myDate.getDate() + "." + (myDate.getMonth() + 1) + "." + myDate.getFullYear();
         },
         deleteCard(card) {
             this.column3.cards.splice(this.column3.cards.indexOf(card), 1);
@@ -292,7 +293,7 @@ Vue.component('col3', {
    </div>
       <h3>{{card.title}}</h3>
       <p class="card-desc">{{card.description}}</p>
-      <span class="card-deadline">deadline: {{ getFormattedDate(card.deadline) }}</span>
+      <span class="card-deadline">deadline: {{ card.deadline }}</span>
       <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
       <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
       <div class="topBtn">
@@ -334,28 +335,30 @@ Vue.component('col4', {
         column4: {
             type: Object,
         },
-        // note: {
-        //     type: Object
-        // },
-        // errors: {
-        //     type: Array
-        // }
+    },
+    computed: {
+        cards() {
+            return this.column4.cards;
+        },
+    },
+    methods: {
+        getFormattedDate(date) {
+            let myDate = new Date(date);
+            return myDate.getDate() + "." + (myDate.getMonth() + 1) + "." + myDate.getFullYear();
+        },
     },
     template: `
    <div class="done-col">
    <h3>{{ column4.title }}</h3>
-<!--        <ul class="note" v-for="note in column3" :key="note.date">-->
-<!--            <li>{{note.title}}  -->
-<!--            <ol>-->
-<!--                <li class="items" v-for="item in note.noteItems" :key="item.title">-->
-<!--                    {{item.title}}-->
-<!--                </li>-->
-<!--                    <span class="dateNote">{{note.date}}</span>-->
-<!--            </ol>-->
-<!--            </li>-->
-<!--        </ul>-->
-
-
+   <div class="card" v-for="(card, index) in cards" :key="index">
+      <h3>{{card.title}}</h3>
+      <p class="card-desc">{{card.description}}</p>
+      <span class="card-deadline">deadline: {{ card.deadline }}</span>
+      <p class="card-created-date">created: {{ getFormattedDate(card.createdDate) }}</p>
+      <p v-if="card.marker" class="card-created-date">editing: {{ getFormattedDate(card.editingDate) }}</p> <br>
+      <p v-if="card.deadline >= card.completedDate">Сompleted in time</p>
+      <p v-else>Not completed in time</p>
+      </div>
    </div>
     `,
 })
